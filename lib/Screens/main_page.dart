@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:visitor_counting_system/Screens/category_page.dart';
 import 'package:visitor_counting_system/Screens/login_or_sign_up_page.dart';
-import 'package:visitor_counting_system/Screens/login_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

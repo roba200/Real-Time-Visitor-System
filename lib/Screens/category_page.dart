@@ -2,6 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:visitor_counting_system/Components/category_card.dart';
+import 'package:visitor_counting_system/Screens/cafe_page.dart';
+import 'package:visitor_counting_system/Screens/cinema_page.dart';
+import 'package:visitor_counting_system/Screens/mall_page.dart';
+import 'package:visitor_counting_system/Screens/mueseum_page.dart';
+import 'package:visitor_counting_system/Screens/restaurent_page.dart';
+import 'package:visitor_counting_system/Screens/supermarket_page.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -117,11 +123,23 @@ class _CategoryPageState extends State<CategoryPage> {
                         background: Colors.brown.shade200,
                         title: "Restaurent",
                         icon: Icon(Icons.restaurant),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RestaurentPage()));
+                        },
                       ),
                       CategoryCard(
                         background: Colors.brown.shade200,
                         title: "Cafe",
                         icon: Icon(Icons.coffee),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CafePage()));
+                        },
                       )
                     ],
                   ),
@@ -131,11 +149,23 @@ class _CategoryPageState extends State<CategoryPage> {
                         background: Colors.brown.shade200,
                         title: "Supermarket",
                         icon: Icon(Icons.business_outlined),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SupermarketPage()));
+                        },
                       ),
                       CategoryCard(
                         background: Colors.brown.shade200,
                         title: "Mall",
                         icon: Icon(Icons.shopping_cart),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MallPage()));
+                        },
                       )
                     ],
                   ),
@@ -145,11 +175,23 @@ class _CategoryPageState extends State<CategoryPage> {
                         background: Colors.brown.shade200,
                         title: "Cinema",
                         icon: Icon(Icons.movie_creation_outlined),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CinemaPage()));
+                        },
                       ),
                       CategoryCard(
                         background: Colors.brown.shade200,
                         title: "Meuseum",
                         icon: Icon(Icons.account_balance_sharp),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MeuseumPage()));
+                        },
                       )
                     ],
                   )
