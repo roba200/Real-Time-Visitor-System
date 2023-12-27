@@ -19,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _confirmPasswordontroller = TextEditingController();
 
   bool isChecked = false;
+  String selectedRole = 'user';
 
   @override
   void dispose() {
@@ -43,7 +44,8 @@ class _SignUpPageState extends State<SignUpPage> {
           "fullname": _fullnameController.text,
           "username": _usernameController.text,
           "email": FirebaseAuth.instance.currentUser!.email,
-          "uid": FirebaseAuth.instance.currentUser!.uid
+          "uid": FirebaseAuth.instance.currentUser!.uid,
+          "role": selectedRole
         });
       } else {
         showErrorMessage("Passwords don't match!");
@@ -66,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       body: SingleChildScrollView(
         child: Column(children: [
           SizedBox(
-            height: 220,
+            height: 150,
           ),
           Container(
             height: 150,
@@ -117,7 +119,7 @@ class _SignUpPageState extends State<SignUpPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: TextField(
-              decoration: InputDecoration(hintText: "Email or Phone number"),
+              decoration: InputDecoration(hintText: "Email"),
               controller: _emailController,
             ),
           ),
@@ -138,16 +140,46 @@ class _SignUpPageState extends State<SignUpPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: TextField(
-              decoration: InputDecoration(hintText: "password"),
+              obscureText: true,
+              decoration: InputDecoration(hintText: "Password"),
               controller: _passwordController,
             ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: TextField(
+              obscureText: true,
               decoration: InputDecoration(hintText: "Confirm password"),
               controller: _confirmPasswordontroller,
             ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Select Your Role:',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              DropdownButton<String>(
+                value: selectedRole,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedRole = newValue!;
+                  });
+                },
+                items: <String>['user', 'admin']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
           SizedBox(
             height: 20,
@@ -167,7 +199,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0)))),
           SizedBox(
-            height: 38,
+            height: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

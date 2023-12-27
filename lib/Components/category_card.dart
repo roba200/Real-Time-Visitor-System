@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CategoryCard extends StatelessWidget {
   final Color background;
@@ -38,7 +39,10 @@ class CategoryCard extends StatelessWidget {
               alignment: Alignment.topCenter,
               width: 120,
               height: 20,
-              child: Text(title)),
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(),
+              )),
         ],
       ),
     );

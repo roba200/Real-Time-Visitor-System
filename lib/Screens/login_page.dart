@@ -65,13 +65,13 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.only(left: 40, right: 40, bottom: 15),
             child: TextField(
               controller: _emailController,
-              decoration:
-                  InputDecoration(hintText: "Username,Email or Phone Number"),
+              decoration: InputDecoration(hintText: "Email"),
             ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: TextField(
+              obscureText: true,
               controller: _passwordController,
               decoration: InputDecoration(hintText: "Password"),
             ),
@@ -112,18 +112,18 @@ class _LoginPageState extends State<LoginPage> {
                   fixedSize: Size(screenWidth * 0.82, screenhight * 0.06),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0)))),
-          TextButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Not implemented yet!")));
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Text(
-                  "Continue with Google",
-                  style: TextStyle(color: Colors.black87, fontSize: 16),
-                ),
-              )),
+          // TextButton(
+          //     onPressed: () {
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //           SnackBar(content: Text("Not implemented yet!")));
+          //     },
+          //     child: Padding(
+          //       padding: const EdgeInsets.only(top: 20.0),
+          //       child: Text(
+          //         "Continue with Google",
+          //         style: TextStyle(color: Colors.black87, fontSize: 16),
+          //       ),
+          //     )),
           SizedBox(
             height: 110,
           ),

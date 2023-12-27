@@ -12,6 +12,11 @@ class MallPage extends StatefulWidget {
 }
 
 class _MallPageState extends State<MallPage> {
+  String searchText = "";
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -46,6 +51,12 @@ class _MallPageState extends State<MallPage> {
                           width: screenWidth * 0.75,
                           child: SearchBar(
                             leading: Icon(Icons.search),
+                            onChanged: (text) {
+                              setState(() {
+                                searchText = text.toLowerCase();
+                                print(searchText);
+                              });
+                            },
                           )),
                     ],
                   ),
@@ -74,12 +85,30 @@ class _MallPageState extends State<MallPage> {
             Container(
               height: screenhight * 0.75,
               child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('malls')
-                      .snapshots(),
+                  stream: searchText.isNotEmpty
+                      ? FirebaseFirestore.instance
+                          .collection('malls')
+                          .where('name_lowercase',
+                              isGreaterThanOrEqualTo: searchText)
+                          .where('name_lowercase',
+                              isLessThanOrEqualTo: searchText + '\uf8ff')
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('malls')
+                          .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return GridView.builder(
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: refresh,
+                      child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -104,16 +133,14 @@ class _MallPageState extends State<MallPage> {
                                                     .docs[index]['image_url'],
                                                 name: snapshot.data!.docs[index]
                                                     ['name'],
-                                                category: 'resturants',
+                                                category: 'malls',
                                               )));
                                 },
                                 title: snapshot.data!.docs[index]['name'],
                               ),
                             );
-                          });
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                          }),
+                    );
                   }),
             )
           ],

@@ -4,8 +4,18 @@ import 'package:visitor_counting_system/Components/category_card.dart';
 import 'package:visitor_counting_system/Components/center_card.dart';
 import 'package:visitor_counting_system/Screens/details_page.dart';
 
-class MeuseumPage extends StatelessWidget {
+class MeuseumPage extends StatefulWidget {
   const MeuseumPage({super.key});
+
+  @override
+  State<MeuseumPage> createState() => _MeuseumPageState();
+}
+
+class _MeuseumPageState extends State<MeuseumPage> {
+  String searchText = "";
+  Future<void> refresh() async {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +51,12 @@ class MeuseumPage extends StatelessWidget {
                           width: screenWidth * 0.75,
                           child: SearchBar(
                             leading: Icon(Icons.search),
+                            onChanged: (text) {
+                              setState(() {
+                                searchText = text.toLowerCase();
+                                print(searchText);
+                              });
+                            },
                           )),
                     ],
                   ),
@@ -69,12 +85,30 @@ class MeuseumPage extends StatelessWidget {
             Container(
               height: screenhight * 0.75,
               child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('museums')
-                      .snapshots(),
+                  stream: searchText.isNotEmpty
+                      ? FirebaseFirestore.instance
+                          .collection('museums')
+                          .where('name_lowercase',
+                              isGreaterThanOrEqualTo: searchText)
+                          .where('name_lowercase',
+                              isLessThanOrEqualTo: searchText + '\uf8ff')
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('museums')
+                          .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return GridView.builder(
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: refresh,
+                      child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -99,16 +133,14 @@ class MeuseumPage extends StatelessWidget {
                                                     .docs[index]['image_url'],
                                                 name: snapshot.data!.docs[index]
                                                     ['name'],
-                                                category: 'resturants',
+                                                category: 'museums',
                                               )));
                                 },
                                 title: snapshot.data!.docs[index]['name'],
                               ),
                             );
-                          });
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                          }),
+                    );
                   }),
             )
           ],

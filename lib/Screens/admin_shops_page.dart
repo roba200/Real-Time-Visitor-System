@@ -1,27 +1,47 @@
+import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:visitor_counting_system/Components/category_card.dart';
 import 'package:visitor_counting_system/Components/center_card.dart';
+import 'package:visitor_counting_system/Screens/add_center_page.dart';
+import 'package:visitor_counting_system/Screens/dashboard_page.dart';
 import 'package:visitor_counting_system/Screens/details_page.dart';
 
-class CinemaPage extends StatefulWidget {
-  const CinemaPage({super.key});
+class AdminShopsPage extends StatefulWidget {
+  const AdminShopsPage({super.key});
 
   @override
-  State<CinemaPage> createState() => _CinemaPageState();
+  State<AdminShopsPage> createState() => _AdminShopsPageState();
 }
 
-class _CinemaPageState extends State<CinemaPage> {
+class _AdminShopsPageState extends State<AdminShopsPage> {
   String searchText = "";
   Future<void> refresh() async {
     setState(() {});
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenhight = MediaQuery.of(context).size.height;
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddCenterPage()));
+        },
+        child: Icon(Icons.add),
+      ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
         child: SingleChildScrollView(
@@ -44,20 +64,20 @@ class _CinemaPageState extends State<CinemaPage> {
                           padding: const EdgeInsets.only(left: 18, right: 10),
                           child: IconButton(
                               onPressed: () {
-                                Navigator.pop(context);
+                                FirebaseAuth.instance.signOut();
                               },
                               icon: Icon(Icons.arrow_back)),
                         ),
                         Container(
                             width: screenWidth * 0.75,
                             child: SearchBar(
-                              leading: Icon(Icons.search),
                               onChanged: (text) {
                                 setState(() {
                                   searchText = text.toLowerCase();
                                   print(searchText);
                                 });
                               },
+                              leading: Icon(Icons.search),
                             )),
                       ],
                     ),
@@ -72,8 +92,8 @@ class _CinemaPageState extends State<CinemaPage> {
                             child: Row(
                               children: [
                                 Text(
-                                  "Cinemas",
-                                  style: TextStyle(
+                                  "Your Centers",
+                                  style: GoogleFonts.poppins(
                                       fontSize: 50,
                                       fontWeight: FontWeight.bold),
                                 )
@@ -86,31 +106,26 @@ class _CinemaPageState extends State<CinemaPage> {
               ),
               Container(
                 height: screenhight * 0.75,
-                child: StreamBuilder(
-                    stream: searchText.isNotEmpty
-                        ? FirebaseFirestore.instance
-                            .collection('cinemas')
-                            .where('name_lowercase',
-                                isGreaterThanOrEqualTo: searchText)
-                            .where('name_lowercase',
-                                isLessThanOrEqualTo: searchText + '\uf8ff')
-                            .snapshots()
-                        : FirebaseFirestore.instance
-                            .collection('cinemas')
-                            .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('centers')
+                          .where('owner_id',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return RefreshIndicator(
-                        onRefresh: refresh,
-                        child: GridView.builder(
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
@@ -129,22 +144,17 @@ class _CinemaPageState extends State<CinemaPage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => DetailsPage(
-                                                  uid: snapshot
+                                            builder: (context) => DashboardPage(
+                                                  centeer_id: snapshot
                                                       .data!.docs[index]['uid'],
-                                                  imageUrl: snapshot.data!
-                                                      .docs[index]['image_url'],
-                                                  name: snapshot.data!
-                                                      .docs[index]['name'],
-                                                  category: 'cinemas',
                                                 )));
                                   },
                                   title: snapshot.data!.docs[index]['name'],
                                 ),
                               );
-                            }),
-                      );
-                    }),
+                            });
+                      }),
+                ),
               )
             ],
           ),

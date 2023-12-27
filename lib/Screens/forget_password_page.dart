@@ -71,7 +71,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              "Enter your email,phone or username and we'll send you a link to cahange a new password",
+              "Enter your email,phone or username and we'll send you a link to change a new password",
               style: TextStyle(color: Colors.black54),
             ),
           ),
@@ -82,8 +82,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: TextField(
               controller: _emailController,
-              decoration:
-                  InputDecoration(hintText: "Username, email or password"),
+              decoration: InputDecoration(hintText: "Email"),
             ),
           ),
           SizedBox(

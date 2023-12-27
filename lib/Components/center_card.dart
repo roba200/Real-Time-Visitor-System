@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CenterCard extends StatelessWidget {
   final String image;
@@ -35,7 +36,9 @@ class CenterCard extends StatelessWidget {
             ),
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +48,10 @@ class CenterCard extends StatelessWidget {
                   size: 15,
                   color: Colors.amber[400],
                 ),
-                Text(" 5.0 (770K)"),
+                Text(
+                  " 5.0 (770K)",
+                  style: GoogleFonts.poppins(),
+                ),
                 SizedBox(
                   width: 20,
                 ),
@@ -54,7 +60,10 @@ class CenterCard extends StatelessWidget {
                   size: 15,
                   color: Colors.grey[400],
                 ),
-                Text(" 5Km"),
+                Text(
+                  " 5Km",
+                  style: GoogleFonts.poppins(),
+                ),
               ],
             )
           ],

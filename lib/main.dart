@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:visitor_counting_system/Screens/main_page.dart';
 import 'package:visitor_counting_system/firebase_options.dart';
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(textTheme: GoogleFonts.poppinsTextTheme()),
       home: MainPage(),
     );
   }

@@ -12,10 +12,16 @@ class RestaurentPage extends StatefulWidget {
 }
 
 class _RestaurentPageState extends State<RestaurentPage> {
+  String searchText = "";
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenhight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -45,6 +51,12 @@ class _RestaurentPageState extends State<RestaurentPage> {
                       Container(
                           width: screenWidth * 0.75,
                           child: SearchBar(
+                            onChanged: (text) {
+                              setState(() {
+                                searchText = text.toLowerCase();
+                                print(searchText);
+                              });
+                            },
                             leading: Icon(Icons.search),
                           )),
                     ],
@@ -74,12 +86,30 @@ class _RestaurentPageState extends State<RestaurentPage> {
             Container(
               height: screenhight * 0.75,
               child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('resturants')
-                      .snapshots(),
+                  stream: searchText.isNotEmpty
+                      ? FirebaseFirestore.instance
+                          .collection('resturants')
+                          .where('name_lowercase',
+                              isGreaterThanOrEqualTo: searchText)
+                          .where('name_lowercase',
+                              isLessThanOrEqualTo: searchText + '\uf8ff')
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('resturants')
+                          .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return GridView.builder(
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: refresh,
+                      child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -110,10 +140,8 @@ class _RestaurentPageState extends State<RestaurentPage> {
                                 title: snapshot.data!.docs[index]['name'],
                               ),
                             );
-                          });
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                          }),
+                    );
                   }),
             )
           ],

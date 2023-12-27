@@ -12,6 +12,11 @@ class SupermarketPage extends StatefulWidget {
 }
 
 class _SupermarketPageState extends State<SupermarketPage> {
+  String searchText = "";
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -46,6 +51,12 @@ class _SupermarketPageState extends State<SupermarketPage> {
                           width: screenWidth * 0.75,
                           child: SearchBar(
                             leading: Icon(Icons.search),
+                            onChanged: (text) {
+                              setState(() {
+                                searchText = text.toLowerCase();
+                                print(searchText);
+                              });
+                            },
                           )),
                     ],
                   ),
@@ -74,12 +85,30 @@ class _SupermarketPageState extends State<SupermarketPage> {
             Container(
               height: screenhight * 0.75,
               child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('supermarkets')
-                      .snapshots(),
+                  stream: searchText.isNotEmpty
+                      ? FirebaseFirestore.instance
+                          .collection('supermarkets')
+                          .where('name_lowercase',
+                              isGreaterThanOrEqualTo: searchText)
+                          .where('name_lowercase',
+                              isLessThanOrEqualTo: searchText + '\uf8ff')
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('supermarkets')
+                          .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return GridView.builder(
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: refresh,
+                      child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -104,16 +133,14 @@ class _SupermarketPageState extends State<SupermarketPage> {
                                                     .docs[index]['image_url'],
                                                 name: snapshot.data!.docs[index]
                                                     ['name'],
-                                                category: 'resturants',
+                                                category: 'supermarkets',
                                               )));
                                 },
                                 title: snapshot.data!.docs[index]['name'],
                               ),
                             );
-                          });
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                          }),
+                    );
                   }),
             )
           ],
